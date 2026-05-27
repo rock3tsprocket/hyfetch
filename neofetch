@@ -1870,7 +1870,10 @@ get_model() {
         ;;
 
         Interix)
-            model="$($(winpath2unix $WINDIR)/System32/wbem/WMIC.exe computersystem get manufacturer,model)"
+            local wmic_path
+            wmic_path="$(winpath2unix "$WINDIR")/System32/wbem/WMIC.exe"
+
+            model="$("$wmic_path" computersystem get manufacturer,model)"
             model="${model/Manufacturer}"
             model="${model/Model}"
         ;;
@@ -3371,13 +3374,16 @@ END
         ;;
 
         "Interix")
-            cpu="$($(winpath2unix $WINDIR)/System32/wbem/WMIC.exe cpu get Name)"
+            local wmic_path
+            wmic_path="$(winpath2unix "$WINDIR")/System32/wbem/WMIC.exe"
+
+            cpu="$("$wmic_path" cpu get Name)"
             cpu="${cpu/Name}"
 
-            speed="$($(winpath2unix $WINDIR)/System32/wbem/WMIC.exe cpu get CurrentClockSpeed)"
+            speed="$("$wmic_path" cpu get CurrentClockSpeed)"
             speed="${speed/CurrentClockSpeed}"
 
-            cores="$($(winpath2unix $WINDIR)/System32/wbem/WMIC.exe cpu get NumberOfCores)"
+            cores="$("$wmic_path" cpu get NumberOfCores)"
             cores="${cores/NumberOfCores}"
         ;;
 
@@ -3629,7 +3635,10 @@ get_gpu() {
         ;;
 
         "Interix")
-            $(winpath2unix $WINDIR)/System32/wbem/WMIC.exe path Win32_VideoController get caption | while read -r line; do
+            local wmic_path
+            wmic_path="$(winpath2unix "$WINDIR")/System32/wbem/WMIC.exe"
+
+            "$wmic_path" path Win32_VideoController get caption | while read -r line; do
                 line=$(trim "$line")
 
                 case $line in
@@ -3795,12 +3804,15 @@ get_memory() {
         ;;
 
         "Interix")
-            mem_total="$($(winpath2unix $WINDIR)/System32/wbem/WMIC.exe computersystem get TotalPhysicalMemory)"
+            local wmic_path
+            wmic_path="$(winpath2unix "$WINDIR")/System32/wbem/WMIC.exe"
+
+            mem_total="$("$wmic_path" computersystem get TotalPhysicalMemory)"
             mem_total="${mem_total//[[:space:]]}"
             mem_total="${mem_total/TotalPhysicalMemory}"
             mem_total="$((mem_total / 1024))"
 
-            mem_free="$($(winpath2unix $WINDIR)/System32/wbem/WMIC.exe os get FreePhysicalMemory)"
+            mem_free="$("$wmic_path" os get FreePhysicalMemory)"
             mem_free="${mem_free//[[:space:]]}"
             mem_free="${mem_free/FreePhysicalMemory}"
 
@@ -5276,10 +5288,13 @@ get_battery() {
         ;;
 
         "Interix")
-            battery="$($(winpath2unix $WINDIR)/System32/wbem/WMIC.exe Path Win32_Battery get EstimatedChargeRemaining)"
+            local wmic_path
+            wmic_path="$(winpath2unix "$WINDIR")/System32/wbem/WMIC.exe"
+
+            battery="$("$wmic_path" Path Win32_Battery get EstimatedChargeRemaining)"
             battery="${battery/EstimatedChargeRemaining}"
             battery="$(trim "$battery")%"
-            state="$($(winpath2unix $WINDIR)/System32/wbem/WMIC.exe /NameSpace:'\\root\WMI' Path BatteryStatus get Charging)"
+            state="$("$wmic_path" /NameSpace:'\\root\WMI' Path BatteryStatus get Charging)"
             state="${state/Charging}"
             [[ "$state" == *TRUE* ]] && battery_state="charging"
         ;;
