@@ -3798,12 +3798,11 @@ get_memory() {
             mem_total="$($(winpath2unix $WINDIR)/System32/wbem/WMIC.exe computersystem get TotalPhysicalMemory)"
             mem_total="${mem_total//[[:space:]]}"
             mem_total="${mem_total/TotalPhysicalMemory}"
-            mem_total="$((mem_total / 1024 / 1024))"
+            mem_total="$((mem_total / 1024))"
 
             mem_free="$($(winpath2unix $WINDIR)/System32/wbem/WMIC.exe os get FreePhysicalMemory)"
             mem_free="${mem_free//[[:space:]]}"
             mem_free="${mem_free/FreePhysicalMemory}"
-            mem_free="$((mem_free / 1024))"
 
             mem_used="$((mem_total - mem_free))"
         ;;
